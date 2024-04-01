@@ -25,17 +25,17 @@ Descripcion:
 
 /*
 Configuracion:
-
+  _WDTE_OFF: Desactiva el watchdog Timer para evitar interrupciones inesperadas.
 */
 typedef unsigned int word;
-//word __at 0x2007 __CONFIG = ();
+word __at 0x2007 __CONFIG = (_WDTE_OFF);
 
 
 //main
 void main (void){
   //Configuracion de PINES
-  TRISIO = 0b00100000; //Configura el PIN GP5 como entrada y el resto como salidas
-  GPIO = 0x00;         //Se ponen todas las salidas en bajo
+  TRISIO  = 0b00100000;   //Configura el PIN GP5  como entrada y el resto como salidas
+  GPIO    = 0x00;         //Se ponen todas las salidas en bajo
   
   //Variables
   unsigned int time = 100;  //Tiempo de retardo
@@ -50,27 +50,68 @@ void main (void){
 
       switch (resultado){
         case 1:
+          //Enciende un led por un instante luego lo apaga
+          GP0 = 1; //1 LEDs
+          delay(time); 
+          GP0 = 0;
         break;
 
         case 2:
+          //Enciende 2 led por un instante luego los apaga
+          GP1 = 1; //2 LEDs
+          delay(time); 
+          GP1 = 0; 
         break;
 
         case 3:
+          //Enciende 3 led por un instante luego los apaga
+          GP0 = 1; //1 LEDs
+          GP1 = 1; //2 LEDs
+          delay(time); 
+          GP0 = 0;
+          GP1 = 0;
         break;
         
         case 4:
+          //Enciende 4 led por un instante luego los apaga
+          GP1 = 1; //2 LEDs
+          GP2 = 1; //2 LEDs
+          delay(time); 
+          GP1 = 0;
+          GP2 = 0;
         break;
 
         case 5:
+          //Enciende 5 led por un instante luego los apaga
+          GP0 = 1;  //1 LEDs
+          GP1 = 1;  //2 LEDs
+          GP2 = 1;  //2 LEDs
+          delay(time); 
+          GP0 = 0;
+          GP1 = 0;
+          GP2 = 0;
         break;
 
         case 6:
+          //Enciende 6 led por un instante luego los apaga
+          GP1 = 1;  //2 LEDs
+          GP2 = 1;  //2 LEDs
+          GP3 = 1;  //2 LEDs
+          delay(time); 
+          GP1 = 0;
+          GP2 = 0;
+          GP3 = 0;
         break;
 
         default:
+          //Por defecto los leds estan apagados
           GPIO = 0x00;
         break;
       }
+    }
+    else{
+      //Por defecto los leds estan apagados
+      GPIO = 0x00;
     }
   }
 }
