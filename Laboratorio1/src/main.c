@@ -19,8 +19,8 @@ Descripcion:
 
 
 //Includes
-//Archivo de cabecera especifico del microcontrolador
-#include <pic14/pic12f683.h>
+#include <pic14/pic12f683.h> //Archivo de cabecera especifico del microcontrolador
+#include <funciones.c>       //Incluye la declaracion y definicios de funciones
 
 
 /*
@@ -31,16 +31,19 @@ typedef unsigned int word;
 //word __at 0x2007 __CONFIG = ();
 
 
-//Declaracion de funciones
-void main (void);
-void delay (unsigned int tiempo);
-
-
-//Definicion de funciones
+//main
 void main (void){
-
-}
-
-void delay (unsigned int tiempo){
+  //Configuracion de PINES
+  TRISIO = 0b00100000 ; //Configura el PIN GP5 como entrada y el resto como salidas
+  GPIO = 0x00 ;         //Se ponen todas las salidas en bajo
   
+  //Variables
+  unsigned int time = 100; //Tiempo de retardo
+
+  //Loop forever
+  while ( 1 ) {
+    
+  }
 }
+
+
