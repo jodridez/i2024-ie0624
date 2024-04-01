@@ -34,16 +34,43 @@ typedef unsigned int word;
 //main
 void main (void){
   //Configuracion de PINES
-  TRISIO = 0b00100000 ; //Configura el PIN GP5 como entrada y el resto como salidas
-  GPIO = 0x00 ;         //Se ponen todas las salidas en bajo
+  TRISIO = 0b00100000; //Configura el PIN GP5 como entrada y el resto como salidas
+  GPIO = 0x00;         //Se ponen todas las salidas en bajo
   
   //Variables
-  unsigned int time = 100; //Tiempo de retardo
+  unsigned int time = 100;  //Tiempo de retardo
+  unsigned int resultado;   //Almacena el resultado del lanzamiento del dado
 
   //Loop forever
   while ( 1 ) {
-    
+    //Si se recibe señal por el PIN GP5
+    if(GP5){
+      //Genera un numero aleatorio del 1 al 6
+      resultado = rollDice(GP5);
+
+      switch (resultado){
+        case 1:
+        break;
+
+        case 2:
+        break;
+
+        case 3:
+        break;
+        
+        case 4:
+        break;
+
+        case 5:
+        break;
+
+        case 6:
+        break;
+
+        default:
+          GPIO = 0x00;
+        break;
+      }
+    }
   }
 }
-
-

@@ -48,8 +48,8 @@ int rand(int randMax, int PIN){
 }
 
 int rollDice(int PIN){
-   int rollDice = rand(7,PIN) + 1;
-   return rollDice;
+   int resultado = rand(7,PIN) + 1;
+   return resultado;
 }
 
 
