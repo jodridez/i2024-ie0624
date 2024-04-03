@@ -14,7 +14,11 @@ Descripcion:
   Contiene el codigo necesario para programar un simulador de dado
   en un controlador PIC12f683. El programa recibe una senal, genera un numero 
   aleatorio y enciende los pines necesarios para encender los LEDs que simularan
-  el dado.
+  el dado. Los pines tienen las siguientes conexiones:
+  GPO: 1 LED
+  GP1: 2 LEDs
+  GP1: 2 LEDs
+  GP4: 1 LED
 */
 
 
@@ -32,23 +36,29 @@ word __at 0x2007 __CONFIG = (_WDTE_OFF);
 
 
 //main
-void main (void){
+void main (void)
+{
   //Configuracion de PINES
+  //El orden de los pines es el siguiente: 0b00543210
   TRISIO  = 0b00100000;   //Configura el PIN GP5  como entrada y el resto como salidas
   GPIO    = 0x00;         //Se ponen todas las salidas en bajo
   
   //Variables
-  unsigned int time = 100;  //Tiempo de retardo
+  unsigned int time = 400;  //Tiempo de retardo
   unsigned int resultado;   //Almacena el resultado del lanzamiento del dado
 
   //Loop forever
-  while ( 1 ) {
+  while ( 1 )
+  {
     //Si se recibe señal por el PIN GP5
-    if(GP5){
+    if(GP5)
+    {
       //Genera un numero aleatorio del 1 al 6
-      resultado = rollDice(GP5);
+      //resultado = rollDice(GP5);
+      resultado = 6;
 
-      switch (resultado){
+      switch (resultado)
+      {
         case 1:
           //Enciende un led por un instante luego lo apaga
           GP0 = 1; //1 LEDs
@@ -65,42 +75,34 @@ void main (void){
 
         case 3:
           //Enciende 3 led por un instante luego los apaga
-          GP0 = 1; //1 LEDs
-          GP1 = 1; //2 LEDs
+          //Activa los pines GP0 y GP1
+          GPIO = 0b00000011;
           delay(time); 
-          GP0 = 0;
-          GP1 = 0;
+          GPIO = 0x00;
         break;
         
         case 4:
           //Enciende 4 led por un instante luego los apaga
-          GP1 = 1; //2 LEDs
-          GP2 = 1; //2 LEDs
+          //Activa los pines GP1 y GP2
+          GPIO = 0b00000110;
           delay(time); 
-          GP1 = 0;
-          GP2 = 0;
+          GPIO = 0x00;
         break;
 
         case 5:
           //Enciende 5 led por un instante luego los apaga
-          GP0 = 1;  //1 LEDs
-          GP1 = 1;  //2 LEDs
-          GP2 = 1;  //2 LEDs
+          //Activa los pines GP0, GP1 y GP2
+          GPIO = 0b00000111;
           delay(time); 
-          GP0 = 0;
-          GP1 = 0;
-          GP2 = 0;
+          GPIO = 0x00;
         break;
 
         case 6:
           //Enciende 6 led por un instante luego los apaga
-          GP1 = 1;  //2 LEDs
-          GP2 = 1;  //2 LEDs
-          GP3 = 1;  //2 LEDs
+          //Activa los pines GP0, GP1, GP2, GP4
+          GPIO = 0b00010111;
           delay(time); 
-          GP1 = 0;
-          GP2 = 0;
-          GP3 = 0;
+          GPIO = 0x00;
         break;
 
         default:
@@ -109,7 +111,8 @@ void main (void){
         break;
       }
     }
-    else{
+    else
+    {
       //Por defecto los leds estan apagados
       GPIO = 0x00;
     }
