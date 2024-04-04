@@ -17,7 +17,7 @@ Descripcion:
   que simulan la cara del dado resultante. Los pines encienden la siguiente cantidad de LEDS:
   GPO: 1 LED
   GP1: 2 LEDs
-  GP1: 2 LEDs
+  GP2: 2 LEDs
   GP4: 1 LED
 */
 
@@ -83,14 +83,14 @@ void main (void)
           //Enciende un LED por un instante luego lo apaga
           GP0 = 1; //1 LEDs
           delay(time); 
-          GP0 = 0;
+          GPIO = 0x00;
         break;
 
         case 2:
           //Enciende 2 LEDs por un instante luego los apaga
           GP1 = 1; //2 LEDs
           delay(time); 
-          GP1 = 0; 
+          GPIO = 0x00;
         break;
 
         case 3:
