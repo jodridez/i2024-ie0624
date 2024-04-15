@@ -29,7 +29,6 @@ ISR(INT0_vect) {
     press_boton = 1; // Se establece la bandera del botón
 }
 
-
 ISR(TIMER1_COMPA_vect) {
     medio_segundo++; // Incrementa el contador de medio segundo
 }
@@ -45,13 +44,13 @@ typedef enum {
     DETENCION_PEATONES      // LDPP se apaga, LDPD se enciende
 } Estado;
 Estado estado;
-
 //Declaracion de funciones
 void FMS();
 
 void configurarPines() {
     DDRB |= 0b00001111; // Configura los pines B0, B1, B2 y B3 como salida, el resto como entrada
     PORTB |= 0b0000000; // Configura los pines en bajo.
+
 }
 
 void configurarInterrupciones() {
@@ -70,12 +69,52 @@ void configurarInterrupciones() {
 
 
 
+
 int main() {
     configurarPines();
     configurarInterrupciones();
+    estado = PASO_VEHICULOS;
+    press_boton = 0;
+    medio_segundo = 0;
 
-    while (1) {
-        estado = PASO_VEHICULOS;
+    while (1) { 
+        FMS();
+    }
+}
+
+
+
+//Maquina de estados
+void FMS(){
+    switch (estado){
+        case PASO_VEHICULOS:
+            // LDPV y LDPD encendido, los demas apagados
+            PORTB |= 0b0001001;
+            if(press_boton){
+                PORTB &= 0b11110000;
+                estado = ADVERTENCIA_VEHICULOS;
+                press_boton = 0;
+            }
+        break;
+
+        case ADVERTENCIA_VEHICULOS:
+            if(medio_segundo%2==0){
+                PORTB = (1<<PB0);
+            }
+            else{
+                PORTB = (0<<PB0);
+            }
+            estado = ADVERTENCIA_VEHICULOS;
+
+        break;
+
+        default:
+        break;
+    }
+}
+
+
+/*
             //PORTB |= 0b00000000;
             
             //PRUEBA DE FUNCION DE PARPADEO
@@ -89,79 +128,18 @@ int main() {
             
 
         //Prueba Interrupcion boton
-        /*
+        
         if (press_boton){
             PORTB |= (1 << PB0);
             press_boton = 0;
         }
-        */
+        
 
 
         //Prueba
-        /*
+        
         if (press_boton){
             PORTB |= 0b0001001;
             press_boton = 0;
         }
         */
-        
-        //FMS();
-    }
-    return 0;
-}
-
-
-/*
-//Maquina de estados
-void FMS(){
-    switch (estado){
-        case PASO_VEHICULOS:
-            // LDPV encendido, los demas apagados
-            PORTB |= 0b00000000; 
-            if(press_boton){
-                estado = ADVERTENCIA_VEHICULOS;
-                press_boton = false;
-            }
-        break;
-
-        case ADVERTENCIA_VEHICULOS:
-            PORTB |= 0b00000000;
-            //TCNT1 = 0; //Reset al Timer/Counter
-            switch (medio_segundo) {
-                case 1:
-                    PORTB |= 0b00000000;
-                    break;
-                
-                case 2:
-                    PORTB |= 0b00000001;
-                    break;
-                
-                case 3:
-                    PORTB |= 0b00000000;
-                    break;
-
-                case 4:
-                    PORTB |= 0b00000001;
-                    break;
-
-                case 5:
-                    PORTB |= 0b00000000;
-                    break;
-
-                case 6:
-                    PORTB |= 0b00000001;
-                    estado = DETENCION_VEHICULOS;
-                    break;
-                
-                default:
-                    break;
-            }
-        break;
-
-
-    
-        default:
-            break;
-    }
-}
-*/
