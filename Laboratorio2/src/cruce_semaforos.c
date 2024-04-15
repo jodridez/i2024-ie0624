@@ -83,10 +83,19 @@ int main() {
     while (1) {
         estado = PASO_VEHICULOS;
         
+        /*
         if (press_boton){
             PORTB |= (1 << PB0);
             press_boton = 0;
         }
+        */
+
+        /*
+        if (press_boton){
+            PORTB |= 0b0001001;
+            press_boton = 0;
+        }
+        */
         
         //FMS();
     }
