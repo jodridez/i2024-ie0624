@@ -22,17 +22,17 @@ Descripcion:
 
 //Variables;
 int press_boton = 0;
-int medio_segundo;
+int medio_segundo = 0;
 
 // Atencion de interrupciones
 ISR(INT0_vect) {
     press_boton = 1; // Se establece la bandera del botón
 }
 
-/*
+
 ISR(TIMER1_COMPA_vect) {
     medio_segundo++; // Incrementa el contador de medio segundo
-}*/
+}
 
 
 //Estados:
@@ -59,20 +59,14 @@ void configurarInterrupciones() {
     GIMSK |= (1 << INT0); // Se habilita la interrupción por INT0 (pin D2)
     MCUCR |= (1 << ISC00) | (1 << ISC01); // Configura para que INT0 se dispare por flanco positivo
 
-    /*
    // Configura Timer/Counter1 en modo CTC (Clear Timer on Compare Match)
     TCCR1B |= (1 << WGM12); // Modo CTC
-    OCR1A = 976; // Valor de comparación para generar una interrupción cada 0.5 segundos (FCPU = 1MHz, prescaler = 1024)
+    OCR1A = 3906; // Valor de comparación para generar una interrupción cada 0.5 segundos (FCPU = 1MHz, prescaler = 1024)
     // Configura el prescaler a 1024
     TCCR1B |= (1 << CS12) | (1 << CS10); //prescaler = 1024
     // Habilita la interrupción por Comparación de salida de Timer/Counter1 (Output Compare Match A)
     TIMSK |= (1 << OCIE1A);
-    */
 }
-
-
-
-
 
 
 
@@ -82,7 +76,19 @@ int main() {
 
     while (1) {
         estado = PASO_VEHICULOS;
-        
+            //PORTB |= 0b00000000;
+            
+            //PRUEBA DE FUNCION DE PARPADEO
+            if(medio_segundo%2==0){
+                PORTB = (1<<PB0);
+            }
+            else
+            {
+                PORTB = (0<<PB0);
+            }
+            
+
+        //Prueba Interrupcion boton
         /*
         if (press_boton){
             PORTB |= (1 << PB0);
@@ -90,6 +96,8 @@ int main() {
         }
         */
 
+
+        //Prueba
         /*
         if (press_boton){
             PORTB |= 0b0001001;
@@ -99,9 +107,9 @@ int main() {
         
         //FMS();
     }
-
     return 0;
 }
+
 
 /*
 //Maquina de estados
