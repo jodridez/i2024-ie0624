@@ -20,12 +20,27 @@ Descripcion:
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
- int press_boton = 0; //Indica si se presiono un boton
- int medio_segundo = 0; //Lleva la cuenta de los medios segundos
+
+int press_boton = 0; //Indica si se presiono un boton
+int medio_segundo = 0; //Lleva la cuenta de los medios segundos
+
+//Estados:
+int estado;
+typedef enum {
+    PASO_VEHICULOS,          // Estado idle LDPV ON, LDVD OFF
+    ADVERTENCIA_VEHICULOS,  // Se preciona el boton, LDPV verde parpadea
+    DETENCION_VEHICULOS,    // LDPV se apaga, LDVD se enciende
+    PASO_PEATONES,          // LDPP se enciende, LDPD se apaga
+    ADVERTENCIA_PEATONES,   // Se acaba el tiempo, LDPP parpadea
+    DETENCION_PEATONES      // LDPP se apaga, LDPD se enciende
+} Estado;
+
+//Declaracion de funciones
+void FMS();
 
 void configurarPines() {
     DDRB |= 0b00001111; // Configura los pines B0, B1, B2 y B3 como salida, el resto como entrada
-    PORTB |= 0b00000010; // Configura el pin B1 en alto, y el resto en bajo.
+    PORTB |= 0b0000001; // Configura el pin B0 en alto, y el resto en bajo.
 }
 
 void configurarInterrupciones() {
@@ -55,20 +70,25 @@ int main() {
     configurarInterrupciones();
 
     while (1) {
-        PORTB |= (1 << PB1); // Enciende luz verde
-        if (medio_segundo >= 4) {
-            PORTB |= (1 << PB0); // Enciende luz roja de abajo
-             // Reinicia el contador de medio segundo
-            _delay_ms(500); // Espera 500 ms
-            PORTB &= ~(1 << PB0); // Apaga luz roja de abajo
-            //medio_segundo = 0;
-        }
-        if (press_boton == 1) { // Si se presionó el botón
-            PORTB &= ~(1 << PB0); // Apaga la luz roja de abajo
-            _delay_ms(500); // Espera 500 ms
-            press_boton = 0; // Reinicia la bandera del botón
-        }
+        estado = 0;
+        FMS();
     }
 
     return 0;
+}
+
+//Maquina de estados
+void FMS(){
+    switch (estado){
+        case PASO_VEHICULOS:
+            // LDPV encendido, los demas apagados
+            PORTB |= 0b00000001; 
+            if(press_boton){
+                estado = ADVERTENCIA_VEHICULOS;
+            }
+        break;
+    
+        default:
+            break;
+    }
 }
