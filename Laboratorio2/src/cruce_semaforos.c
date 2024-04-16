@@ -167,33 +167,3 @@ void FMS(){
         break;
     }
 }
-
-/*
-            //PORTB |= 0b00000000;
-            
-            //PRUEBA DE FUNCION DE PARPADEO
-            if(medio_segundo%2==0){
-                PORTB = (1<<PB0);
-            }
-            else
-            {
-                PORTB = (0<<PB0);
-            }
-            
-
-        //Prueba Interrupcion boton
-        
-        if (press_boton){
-            PORTB |= (1 << PB0);
-            press_boton = 0;
-        }
-        
-
-
-        //Prueba
-        
-        if (press_boton){
-            PORTB |= 0b0001001;
-            press_boton = 0;
-        }
-        */
