@@ -39,6 +39,10 @@ int leer_switch_pantalla;
 int leer_switch_serial;
 // Pantalla LCD
 PCD8544 lcd; //Instancia de la pantalla LCD
+// Controlador PID
+float setpoint; // Temperatura deseada en C, punto de operacion
+float input; // Temperatura actual en C
+float output; // Salida del controlador PID, senal de control
 
 // Declaracion de funciones propias
 /*
@@ -67,7 +71,21 @@ float simPlanta(float Q) {
 }
 
 
-// Falta funcion de impresion en la pantalla lcd,  funcion de comunicacion serial y configuracion del controlador PID
+// Falta funcion de comunicacion serial y configuracion del controlador PID
+void pantalla_lcd(float setpoint, float input, float output) {
+  lcd.setCursor(0, 0); // Escribe en la linea 0
+  lcd.print("SP: "); // Temperatura de operaci´on
+  lcd.print(setpoint);
+
+
+  lcd.setCursor(0, 1); // Escribe en la linea 1
+  lcd.print("T: "); // Temperatura sensada
+  lcd.print(input);
+
+  lcd.setCursor(0, 2); // Escribe en la linea 2
+  lcd.print("PID: "); // Salida del controlador PID
+  lcd.print(output);
+}
 
 // Inicializacion / Configuracion de perifericos
 void setup() {
@@ -88,4 +106,10 @@ void loop() {
   leer_potenciometro = analogRead(potenciometro); // Leer el valor del potenciometro
   leer_switch_pantalla = analogRead(switch_pantalla); // Leer el estado del switch de la pantalla
   leer_switch_serial   = analogRead(switch_serial); // Leer el estado del switch de la comunicacion serial
+
+  // Valores de prueba
+  setpoint = 37; // Temperatura deseada en C
+  input = 35; // Temperatura actual en C
+  output = 100; // Salida del controlador PID en W
+  pantalla_lcd(setpoint, input, output);
 }
