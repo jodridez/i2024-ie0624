@@ -45,6 +45,7 @@ int leer_switch_serial;
 
 // Pantalla LCD
 PCD8544 lcd; //Instancia de la pantalla LCD
+int modo_lcd; // Modo de operacion de la pantalla LCD, encendidio o apagado
 
 // Controlador PID
 float setpoint; // Temperatura deseada en C, punto de operacion
@@ -123,7 +124,15 @@ void encedido_leds(float input){
 }
 
 // Funcion para mostrar la informacion en la pantalla LCD
-void pantalla_lcd(int setpoint, float input, float output) {
+void pantalla_lcd(float setpoint, float input, float output, float modo) {
+  // Funcion de encedido de la pantalla LCD
+  if(modo == 0){ // Modo de operacion de la pantalla LCD
+    lcd.setPower(LOW); // Apagar la pantalla LCD
+  }
+  else{
+    lcd.setPower(HIGH); // Enciende la pantalla LCD
+  }
+
   lcd.setCursor(0, 0); // Escribe en la linea 0
   lcd.print("SP: "); // Temperatura de operaci´on
   lcd.print(setpoint);
@@ -158,12 +167,15 @@ void loop() {
   leer_switch_pantalla = analogRead(switch_pantalla); // Leer el estado del switch de la pantalla
   leer_switch_serial   = analogRead(switch_serial); // Leer el estado del switch de la comunicacion serial
   
+  //LCD
+  modo_lcd = leer_switch_pantalla; // Modo de operacion de la pantalla LCD
+
   // Valores de prueba
   setpoint = leer_pot(); // Temperatura deseada en C
-  input = 35; // Temperatura actual en C
+  input = leer_switch_pantalla; // Temperatura actual en C
   output = 100; // Salida del controlador PID en W
   
   // Se prueban las funciones
   encedido_leds(setpoint);
-  pantalla_lcd(setpoint, input, output);
+  pantalla_lcd(setpoint, input, output, modo_lcd);
 }
