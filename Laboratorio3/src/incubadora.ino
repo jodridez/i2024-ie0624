@@ -20,29 +20,38 @@ Descripcion:
   texto plano
 */
 
+// Falta funcion de los switches, funcion de comunicacion serial y configuracion del controlador PID
+
 // Imports
 #include <PCD8544.h> // Para utilizar la pantalla LCD PCD8544
 #include <PID_v1.h> // Para implementar el controlador PID 
+
 
 // Declaracion de variables globales
 // Pines de entrada analogica
 int potenciometro   = 0; // Potenciometro conectado al PIN A0
 int switch_pantalla = 4; // Pin para el switch de encendidio de la pantalla conectado al pin A4
 int switch_serial   = 5; // Pin para el switch de comunicacion serial conectado al pin A5
+
 // Pines de salida digital
 int led_azul  = 8;  // Led azul conectado al pin D8
 int led_verde = 12; // Led verde conectado al pin D12
 int led_rojo  = 13; // Led rojo conectado al pin D13
+
 // Variables de lectura de los pines
 int leer_potenciometro;
 int leer_switch_pantalla;
 int leer_switch_serial;
+
 // Pantalla LCD
 PCD8544 lcd; //Instancia de la pantalla LCD
+
 // Controlador PID
 float setpoint; // Temperatura deseada en C, punto de operacion
 float input; // Temperatura actual en C
 float output; // Salida del controlador PID, senal de control
+
+
 
 // Declaracion de funciones propias
 /*
@@ -71,8 +80,50 @@ float simPlanta(float Q) {
 }
 
 
-// Falta funcion de comunicacion serial y configuracion del controlador PID
-void pantalla_lcd(float setpoint, float input, float output) {
+// Funcion lectura de  potenciometro
+float leer_pot(){
+  // Se debe convertir la tension medida a una temperatura en C
+  // Temperatura de operacion en el rango [20, 80] C
+  float lectura = analogRead(potenciometro); // Leer la tension del potenciometro
+  // Se normiliza la tension a un rango de [0, 1]
+  float lectura_maxima = 1022.0; // Valor maximo de la lectura
+  float lectura_normalizada = lectura/lectura_maxima; // Normalizar la lectura
+  float setpoint_min = 20.0; // Temperatura minima de operacion
+  float setpoint_max = 80.0; // Temperatura maxima de operacion
+  float setpoint = setpoint_min + (setpoint_max - setpoint_min)*lectura_normalizada; // setpoint en el rango [20, 80] C
+  
+  return setpoint;
+}
+
+// Funcion de encedido de luces LED segun la temperatura sensada en el rango [30,42] C
+void encedido_leds(float input){ 
+  if(input<30){ // Temperatura menor a 30 C
+    digitalWrite(led_azul, HIGH); // Encender el led azul
+    digitalWrite(led_verde, LOW); 
+    digitalWrite(led_rojo, LOW);
+  }
+
+  else if(input>=30 && input<=42){ // Temperatura en el rango [30,42] C
+    digitalWrite(led_azul, LOW);
+    digitalWrite(led_verde, HIGH); // Encender el led verde
+    digitalWrite(led_rojo, LOW);
+  }
+
+  else if(input>42){ // Temperatura mayor a 42 C
+    digitalWrite(led_azul, LOW);
+    digitalWrite(led_verde, LOW);
+    digitalWrite(led_rojo, HIGH); // Encender el led rojo
+  }
+  
+  else{ // Apagar todos los leds
+    digitalWrite(led_azul, LOW);
+    digitalWrite(led_verde, LOW);
+    digitalWrite(led_rojo, LOW);
+  }
+}
+
+// Funcion para mostrar la informacion en la pantalla LCD
+void pantalla_lcd(int setpoint, float input, float output) {
   lcd.setCursor(0, 0); // Escribe en la linea 0
   lcd.print("SP: "); // Temperatura de operaci´on
   lcd.print(setpoint);
@@ -103,13 +154,16 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  leer_potenciometro = analogRead(potenciometro); // Leer el valor del potenciometro
+  //leer_potenciometro = analogRead(potenciometro); // Leer el valor del potenciometro
   leer_switch_pantalla = analogRead(switch_pantalla); // Leer el estado del switch de la pantalla
   leer_switch_serial   = analogRead(switch_serial); // Leer el estado del switch de la comunicacion serial
-
+  
   // Valores de prueba
-  setpoint = 37; // Temperatura deseada en C
+  setpoint = leer_pot(); // Temperatura deseada en C
   input = 35; // Temperatura actual en C
   output = 100; // Salida del controlador PID en W
+  
+  // Se prueban las funciones
+  encedido_leds(setpoint);
   pantalla_lcd(setpoint, input, output);
 }
